@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   Download, Layers, Settings, Activity, 
-  Search, CheckSquare, Square, FolderDown, Moon, Sparkles 
+  Search, CheckSquare, Square, FolderDown, Sparkles 
 } from 'lucide-react';
 
 export default function App() {
@@ -34,10 +34,18 @@ export default function App() {
     setSelectedEps(new Set());
   };
 
+  const navItems = [
+    { id: 'tasks', label: 'ផ្ទាំងមេ', icon: Layers },
+    { id: 'queue', label: 'ជួរទាញយក', icon: Download },
+    { id: 'activity', label: 'ប្រវត្តិ', icon: Activity },
+    { id: 'settings', label: 'កំណត់', icon: Settings },
+  ];
+
   return (
-    <div className="flex h-screen bg-[#090d16] text-slate-100 antialiased overflow-hidden font-sans">
-      {/* Sidebar */}
-      <aside className="w-64 bg-[#0f172a]/70 backdrop-blur border-r border-slate-800/80 flex flex-col justify-between p-4">
+    <div className="flex flex-col md:flex-row h-screen bg-[#090d16] text-slate-100 antialiased overflow-hidden font-sans">
+      
+      {/* 1. Desktop Sidebar (លាក់លើ Mobile) */}
+      <aside className="hidden md:flex w-64 bg-[#0f172a]/70 backdrop-blur border-r border-slate-800/80 flex-col justify-between p-4 flex-shrink-0">
         <div>
           <div className="flex items-center gap-3 px-3 py-4 mb-6">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
@@ -52,12 +60,7 @@ export default function App() {
           </div>
 
           <nav className="space-y-1.5">
-            {[
-              { id: 'tasks', label: 'ផ្ទាំងមេ (Fetch)', icon: Layers },
-              { id: 'queue', label: 'ជួរទាញយក (Queue)', icon: Download },
-              { id: 'activity', label: 'ប្រវត្តិ (Activity)', icon: Activity },
-              { id: 'settings', label: 'ការកំណត់ (Settings)', icon: Settings },
-            ].map((item) => {
+            {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
               return (
@@ -84,107 +87,121 @@ export default function App() {
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-hidden">
-        <header className="px-8 py-5 border-b border-slate-800/80 bg-[#0f172a]/30 backdrop-blur flex items-center justify-between gap-4">
-          <div className="flex-1 max-w-2xl relative">
+      {/* 2. Main Content Area */}
+      <main className="flex-1 flex flex-col overflow-hidden pb-16 md:pb-0">
+        
+        {/* Header / Input Link Bar */}
+        <header className="px-4 py-3 md:px-8 md:py-5 border-b border-slate-800/80 bg-[#0f172a]/50 backdrop-blur flex items-center gap-3 flex-shrink-0">
+          <div className="flex md:hidden items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 flex-shrink-0">
+            <Sparkles className="w-4 h-4 text-white" />
+          </div>
+          
+          <div className="flex-1 relative">
             <input
               type="text"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              placeholder="បញ្ចូលតំណភ្ជាប់ URL (Link ភាគរឿង)..."
-              className="w-full bg-[#131b2e] border border-slate-700/60 rounded-xl pl-4 pr-24 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition shadow-inner"
+              placeholder="បញ្ចូលតំណភ្ជាប់ Link..."
+              className="w-full bg-[#131b2e] border border-slate-700/60 rounded-xl pl-3 pr-20 md:pr-24 py-2 text-xs md:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition shadow-inner"
             />
-            <button className="absolute right-1.5 top-1.5 bottom-1.5 bg-indigo-600 hover:bg-indigo-500 text-white px-4 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
-              <Search className="w-3.5 h-3.5" />
+            <button className="absolute right-1 top-1 bottom-1 bg-indigo-600 hover:bg-indigo-500 text-white px-3 md:px-4 rounded-lg text-xs font-semibold flex items-center gap-1 transition">
+              <Search className="w-3 h-3" />
               <span>ពិនិត្យ</span>
             </button>
           </div>
-          <button className="p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-xl transition">
-            <Moon className="w-5 h-5" />
-          </button>
         </header>
 
-        <div className="flex-1 flex overflow-hidden p-6 gap-6">
-          {/* Left: Metadata */}
-          <section className="w-80 flex flex-col bg-slate-900/40 border border-slate-800 rounded-2xl p-5 overflow-y-auto">
-            <div className="w-full aspect-[3/4] rounded-xl overflow-hidden border border-slate-700/50 shadow-2xl relative group mb-4">
-              <img 
-                src={dramaData.poster} 
-                alt="Drama Poster" 
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-70"></div>
+        {/* Scrollable Work Area */}
+        <div className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden p-3 md:p-6 gap-4 md:gap-6">
+          
+          {/* Section: Metadata (Mobile: Horizontal Card | Desktop: Vertical Panel) */}
+          <section className="w-full md:w-80 flex-shrink-0 bg-slate-900/50 border border-slate-800 rounded-xl md:rounded-2xl p-3.5 md:p-5 flex flex-col">
+            
+            {/* Mobile View: Poster នៅឆ្វេង អក្សរនៅស្តាំ */}
+            <div className="flex md:flex-col gap-3.5 items-start">
+              <div className="w-24 sm:w-28 md:w-full aspect-[3/4] rounded-lg md:rounded-xl overflow-hidden border border-slate-700/50 shadow-md flex-shrink-0 relative">
+                <img 
+                  src={dramaData.poster} 
+                  alt="Poster" 
+                  className="w-full h-full object-cover" 
+                />
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <h2 className="text-sm md:text-base font-bold text-white mb-1.5 truncate md:whitespace-normal">
+                  {dramaData.title}
+                </h2>
+
+                <div className="flex flex-wrap gap-1 mb-2">
+                  {dramaData.tags.slice(0, 3).map((tag) => (
+                    <span key={tag} className="text-[10px] bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded border border-slate-700">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+
+                <p className="hidden md:block text-xs text-slate-400 leading-relaxed mb-4">
+                  {dramaData.description}
+                </p>
+              </div>
             </div>
 
-            <h2 className="text-base font-bold text-white mb-2 leading-snug">
-              {dramaData.title}
-            </h2>
-
-            <div className="flex flex-wrap gap-1.5 mb-3">
-              {dramaData.tags.map((tag) => (
-                <span key={tag} className="text-[11px] bg-slate-800/80 text-slate-300 px-2 py-0.5 rounded border border-slate-700">
-                  {tag}
-                </span>
-              ))}
-            </div>
-
-            <p className="text-xs text-slate-400 leading-relaxed mb-6 flex-1">
-              {dramaData.description}
-            </p>
-
+            {/* Start Button */}
             <button 
               disabled={selectedEps.size === 0}
-              className={`w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 shadow-lg transition ${
+              className={`w-full mt-3 md:mt-auto py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition ${
                 selectedEps.size > 0 
                   ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-600/20' 
                   : 'bg-slate-800 text-slate-500 cursor-not-allowed'
               }`}
             >
               <FolderDown className="w-4 h-4" />
-              <span>ចាប់ផ្តើមទាញយក ({selectedEps.size})</span>
+              <span>ចាប់ផ្តើម ({selectedEps.size} ភាគ)</span>
             </button>
           </section>
 
-          {/* Right: Episodes Grid */}
-          <section className="flex-1 bg-slate-900/40 border border-slate-800 rounded-2xl flex flex-col overflow-hidden">
-            <div className="p-4 border-b border-slate-800/80 flex items-center justify-between bg-slate-900/60">
+          {/* Section: Episodes Grid */}
+          <section className="flex-1 bg-slate-900/50 border border-slate-800 rounded-xl md:rounded-2xl flex flex-col min-h-[350px] md:min-h-0 overflow-hidden">
+            
+            {/* Action Bar */}
+            <div className="p-3 border-b border-slate-800 flex items-center justify-between bg-slate-900/70 flex-shrink-0">
               <div className="flex items-center gap-2">
                 <button 
                   onClick={selectAll} 
-                  className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700/80 text-xs font-medium text-slate-300 transition flex items-center gap-1.5 border border-slate-700"
+                  className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] md:text-xs text-slate-300 transition flex items-center gap-1 border border-slate-700"
                 >
-                  <CheckSquare className="w-3.5 h-3.5 text-cyan-400" />
-                  ជ្រើសរើសទាំងអស់
+                  <CheckSquare className="w-3 h-3 text-cyan-400" />
+                  <span>ទាំងអស់</span>
                 </button>
                 <button 
                   onClick={deselectAll} 
-                  className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700/80 text-xs font-medium text-slate-300 transition flex items-center gap-1.5 border border-slate-700"
+                  className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] md:text-xs text-slate-300 transition flex items-center gap-1 border border-slate-700"
                 >
-                  <Square className="w-3.5 h-3.5 text-slate-400" />
-                  សម្អាត
+                  <Square className="w-3 h-3 text-slate-400" />
+                  <span>សម្អាត</span>
                 </button>
               </div>
-              <div className="text-xs font-medium text-slate-400">
-                បានជ្រើសរើស: <span className="text-indigo-400 font-bold">{selectedEps.size}</span> / {totalEpisodes}
+              <div className="text-[11px] md:text-xs font-medium text-slate-400">
+                បានរើស: <span className="text-indigo-400 font-bold">{selectedEps.size}</span>/{totalEpisodes}
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-5 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2.5">
+            {/* Responsive Grid: 4 ជួរលើ mobile, 6 ជួរលើ tablet, 8-10 ជួរលើ desktop */}
+            <div className="flex-1 overflow-y-auto p-3 md:p-4 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2">
               {Array.from({ length: totalEpisodes }, (_, i) => i + 1).map((ep) => {
                 const isSelected = selectedEps.has(ep);
                 return (
                   <button
                     key={ep}
                     onClick={() => toggleSelect(ep)}
-                    className={`py-3 px-2 rounded-xl text-center flex flex-col items-center justify-center transition-all border ${
+                    className={`py-2 px-1 md:py-2.5 rounded-lg text-center flex flex-col items-center justify-center transition-all border ${
                       isSelected
-                        ? 'bg-indigo-600/20 border-indigo-500/80 text-indigo-300 ring-2 ring-indigo-500/20 shadow-md'
-                        : 'bg-slate-950/40 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200'
+                        ? 'bg-indigo-600/30 border-indigo-500 text-indigo-200 ring-1 ring-indigo-500/50'
+                        : 'bg-slate-950/40 border-slate-800/80 text-slate-400 active:bg-slate-800'
                     }`}
                   >
-                    <span className="text-xs font-bold tracking-tight">EP {ep.toString().padStart(2, '0')}</span>
-                    <span className={`text-[10px] mt-0.5 ${isSelected ? 'text-indigo-400 font-medium' : 'text-slate-500'}`}>
+                    <span className="text-[11px] md:text-xs font-bold">EP {ep.toString().padStart(2, '0')}</span>
+                    <span className={`text-[9px] ${isSelected ? 'text-indigo-300' : 'text-slate-500'}`}>
                       1080p
                     </span>
                   </button>
@@ -192,8 +209,30 @@ export default function App() {
               })}
             </div>
           </section>
+
         </div>
       </main>
+
+      {/* 3. Mobile Bottom Navigation Bar (បង្ហាញតែលើទូរស័ព្ទប៉ុណ្ណោះ) */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 h-14 bg-[#0f172a]/95 backdrop-blur border-t border-slate-800 flex items-center justify-around px-2 z-50">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = activeTab === item.id;
+          return (
+            <button
+              key={item.id}
+              onClick={() => setActiveTab(item.id)}
+              className={`flex flex-col items-center justify-center flex-1 py-1 transition-colors ${
+                isActive ? 'text-indigo-400' : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <Icon className="w-4 h-4 mb-0.5" />
+              <span className="text-[10px] font-medium">{item.label}</span>
+            </button>
+          );
+        })}
+      </nav>
+
     </div>
   );
 }
